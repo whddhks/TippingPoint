@@ -1,5 +1,4 @@
 #include <AimHangul.h>
-#include <Servo.h>
 #include "SPI.h"
 #include <Wire.h>
 
@@ -56,12 +55,12 @@ void display(TFT_22_ILI9225 tft, String name[]){
 
 }
 void intro_time(TFT_22_ILI9225 tft, String time) {
-  String h=time.substring(0,2);
-  String m=time.substring(2,4);
+//  String h=time.substring(0,2);
+//  String m=time.substring(2,4);
   tft.setFont(Terminal12x16);
-  tft.drawText(90,95,h,COLOR_WHITE);
-  tft.drawText(115,95,":",COLOR_WHITE);
-  tft.drawText(125,95,m,COLOR_WHITE);
+  tft.drawText(90,95,time,COLOR_WHITE);
+//  tft.drawText(115,95,":",COLOR_WHITE);
+//  tft.drawText(125,95,m,COLOR_WHITE);
 }
 void car_num(TFT_22_ILI9225 tft,String fir_num,String snd_num) {
   String n1;
@@ -86,26 +85,30 @@ void total_money(TFT_22_ILI9225 tft, String m) {
   tft.drawText(100,140,m1);
 }
 
-
+//0550288파10122505000
 void receiveEvent(int howMany) {
  String dstr="";
  while (0 <Wire.available()) {    //메세지가 들어왔다면
     char c = Wire.read();      /* 1byte 읽음 */
     dstr=dstr+c;
  }
-    String fir_num=dstr.substring(0,6);
-    String snd_num=dstr.substring(6,10);
-    String car_type1=dstr.substring(10,11);
-    String car_type2=dstr.substring(11,12);
-    String i_time=dstr.substring(12,16);
-    String money=dstr.substring(16,20);
+    String fir_num=dstr.substring(4,10);
+    String snd_num=dstr.substring(0,4);
+    String i_time=dstr.substring(10,15);
+    String money=dstr.substring(15,19);
 //    Serial.println(fir_num);
-    car_num(tft,fir_num,snd_num);
-    intro_time(tft,i_time);
-    intro_time(tft2,i_time);
-    car_num(tft2,fir_num,snd_num);
-    total_money(tft2,money+"0");
-  
+    if (if money.charAt(1)=='0'){
+      // intro_LCD
+      car_num(tft,fir_num,snd_num);
+      intro_time(tft,i_time);
+    }else{
+      // outro_LCD
+      intro_time(tft2,i_time);
+      car_num(tft2,fir_num,snd_num);
+      total_money(tft2,money+"0");
+    }
+    delay(2000);
+    fir_num,snd_num,i_time,money="";
 }
 // 마스터로 요청 메세지 작성 함수
 void requestEvent() {

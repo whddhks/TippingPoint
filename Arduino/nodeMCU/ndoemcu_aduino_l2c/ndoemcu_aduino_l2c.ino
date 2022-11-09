@@ -4,22 +4,28 @@
 MiniCom com;
 #define NOMAL_CAR 0
 #define DISABLE_CAR 1
-#define INTRO_OPEN 2
-#define INTRO_CLOSE 3
-#define OUTRO_OPEN 4
-#define OUTRO_CLOSE 5
+#define PERSON 2
+
 
 
 void setup() {
   com.init();
   Serial.begin(115200); /* 시리얼 통신 속도 */
   Wire.begin(D1, D2); /* SDA=D1 and SCL=D2 of NodeMCU */
-
 }
 
 void loop() {
-  com.run();
 
+  com.run();
+  //Database
+  String sig="";
+  while(Serial.available()){
+    char wait = Serial.read();
+    sig=sig+wait;
+  }
+  char person_type=sig.substring(0,1)
+  String car_info=sig.substring(2,21)
+  //Slave 6
   Wire.beginTransmission(6); /* 슬래이브 주소번호 8 */
   Wire.write(0);  /* 슬레이브에게 보내는 메세지 */
   Wire.endTransmission();/* 전송 */
@@ -34,7 +40,12 @@ void loop() {
   com.print(0,"<=Nomal_Car: ",a);
   delay(500);
   
+
+  //Slave 7
   Wire.beginTransmission(7);
+  if (person_type=='1'){
+      Wire.write(2);
+  }
   Wire.write(1);
   Wire.endTransmission();
   String dstr2= "";
@@ -47,7 +58,10 @@ void loop() {
   com.print(1,"Disable_Car=>",b);        //
   delay(500);
 
-  String car_info="000가000000122502000";
+
+  //Slave 8
+
+
     if (car_info != ""){
       char buff[100];
       car_info.toCharArray(buff,car_info.length());
@@ -57,11 +71,11 @@ void loop() {
       Wire.requestFrom(8, 13);
       while(Wire.available()){
         char c2 = Wire.read();
-        Serial.print(c2);
         car_info="";
         buff[100]={};
       }
-      Serial.println();
   }
+
+  
   delay(1000);
 }

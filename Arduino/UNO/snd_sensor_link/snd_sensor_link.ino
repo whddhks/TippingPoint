@@ -6,8 +6,8 @@
 Ultra ultra1(7, 6);
 Ultra ultra2(5, 4);
 LedControl Dote(10, 8, 9, 2);
-Servo myservo1;
-Servo myservo2;
+Servo servo1;
+Servo servo2;
 const int servo_pin1 = 3;
 const int servo_pin2 = 2;
 int b =2;
@@ -28,16 +28,17 @@ void setup() {
   Wire.begin(7);                /* 슬레이브의 자신의 주소 8 */
   Wire.onReceive(receiveEvent); /* 응답 이벤트 함수 설정 */
   Wire.onRequest(requestEvent); /* 요청 이벤트 함수 설정 */
-  // Serial.begin(115200);           /* 시리얼 통신 속도 설정 */
-  myservo1.attach(servo_pin1);
-  myservo2.attach(servo_pin2);
+  Serial.begin(115200);           /* 시리얼 통신 속도 설정 */
+  servo1.attach(servo_pin1);
+  servo2.attach(servo_pin2);
   Dote.shutdown(0, false);
   Dote.shutdown(1, false);
   Dote.setIntensity(0, 5);
   Dote.setIntensity(1, 5);
   Dote.clearDisplay(0);
   Dote.clearDisplay(1);
-
+  servo1.write(0);
+  servo2.write(0);
 }
 
 void loop() {
@@ -51,12 +52,14 @@ void loop() {
   
   if (distance1 < 10) {
     Dote.shutdown(0, true);
+    servo1.write(0);
   } else {
     Dote.shutdown(0, false);
   }
 
   if (distance2 < 10) {
     Dote.shutdown(1, true);
+      servo2.write(0);
   } else {
     Dote.shutdown(1, false);
   }
@@ -72,12 +75,11 @@ void loop() {
 void receiveEvent(int howMany) {
  while (0 <Wire.available()) {    //메세지가 들어왔다면
     request_type = Wire.read();      /* 1byte 읽음 */
-    
-    // if (request_type==2){
-    //   myservo1.write(90);
-    // }else if(request_type==3){
-    //   myservo1.write(0);
-    // }
+    if (request_type==2){
+      servo1.write(90);
+      servo2.write(90);
+    }
+    Serial.println(request_type);
     // if (request_type==4){
     //   myservo2.write(90);
     // }else if(request_type==5){
