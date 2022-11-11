@@ -45,34 +45,34 @@ def result_plate(result):
     second_num = ''
     str_cnt = 0 # 앞 번호판의 문자 (1글자)만 읽기 위함.
 
-    for i in result :
-        for j in i[1] :
-            for str in plate :
-                if j == str :
-                    result_list.append(j)
 
-            # 문자를 기준으로 앞번호 , 뒷 번호를 슬라이싱.
-            if '가'<=j<='힣' and str_cnt == 0 : 
-                str_cnt += 1
-                first_num=result_list[:result_list.index(j)+1]
-                second_num=result_list[result_list.index(j)+1:] 
+    for j in result :
+        for str in plate :
+            if j == str :
+                result_list.append(j)
 
-                # 형식에 맞게 들어왔는지 체크.
-                if 3<=len(first_num)<=4 :
-                    first_num = ''.join(first_num)
-                else :
-                    first_num = 'error'
+        # 문자를 기준으로 앞번호 , 뒷 번호를 슬라이싱.
+        if '가'<=j<='힣' and str_cnt == 0 : 
+            str_cnt += 1
+            first_num=result_list[:result_list.index(j)+1]
+            second_num=result_list[result_list.index(j)+1:] 
 
-            # 앞 번호 문자 추출이후 뒷 번호를 한번 더 체크
-            # 번호판 앞 번호와 뒷 번호가 분리되지 않고 result로 들어온 경우. ex) '101하 4609'
-            # 번호판 앞 번호와 뒷 번호가 분리되어 result로 들어온 경우. ex)'101하' , '4609'
-            # 번호판 뒷 번호에 필요없는 문자가 섞여있는 경우 ex)'107rㄱㄱ1 6540가00' 모두 걸러냄.
-
+            # 형식에 맞게 들어왔는지 체크.
+            if 3<=len(first_num)<=4 :
+                first_num = ''.join(first_num)
             else :
-                result_list2 = [n for n in result_list if '0'<=n<='9' not  in result_list]
-                if len(result_list2)== 0 :
-                    result_list2 = [n for n in result_list if '0'<=n<='9' in result_list]
-                second_num = ''.join(result_list2[-4:])
+                first_num = 'error'
+
+        # 앞 번호 문자 추출이후 뒷 번호를 한번 더 체크
+        # 번호판 앞 번호와 뒷 번호가 분리되지 않고 result로 들어온 경우. ex) '101하 4609'
+        # 번호판 앞 번호와 뒷 번호가 분리되어 result로 들어온 경우. ex)'101하' , '4609'
+        # 번호판 뒷 번호에 필요없는 문자가 섞여있는 경우 ex)'107rㄱㄱ1 6540가00' 모두 걸러냄.
+
+        else :
+            result_list2 = [n for n in result_list if '0'<=n<='9' not  in result_list]
+            if len(result_list2)== 0 :
+                result_list2 = [n for n in result_list if '0'<=n<='9' in result_list]
+            second_num = ''.join(result_list2[-4:])
 
     return first_num,second_num
 
@@ -112,3 +112,23 @@ def calc_price(find):
 
     # 정산 금액이 만원 이하일때 금액 앞 문자열을 '0' 으로 채움. => str형식
     return '{0:0>5}'.format(price)
+
+def result_arrange(result):
+    first_num = 'err'
+    second_num = 'err'
+    first_sec_num = ''
+
+    for a in result:
+        if re.match(r'[0-9]{2,3}[가-힣]{1}[0-9]{4}',a[1].replace(' ','')):
+            fir_sec_num = a[1].replace(' ','')
+        if re.match(r'[0-9]{2,3}[가-힣]', re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》;]','', a[1])):
+            first_num = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];','', a[1])
+        elif re.match(r'[0-9]{4}', re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];','', a[1])):
+            second_num = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];','', a[1].replace(" ", ""))
+            
+    if first_num:
+        result_str = first_num+second_num
+    else:
+        result_str = fir_sec_num
+        
+    return result_str
