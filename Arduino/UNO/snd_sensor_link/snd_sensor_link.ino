@@ -2,7 +2,9 @@
 #include <Ultra.h>
 #include <LedControl.h>
 #include <Servo.h>
+#include <Switch.h>
 
+Switch btn(11);
 Ultra ultra1(7, 6);
 Ultra ultra2(5, 4);
 LedControl Dote(10, 8, 9, 2);
@@ -23,7 +25,11 @@ byte digits[8] = {
   B01000001,
   B00111110,
 };
-
+void btn_open() {
+  servo2.write(90);
+  delay(5000);
+  servo2.write(0);
+}
 void setup() {
   Wire.begin(7);                /* 슬레이브의 자신의 주소 8 */
   Wire.onReceive(receiveEvent); /* 응답 이벤트 함수 설정 */
@@ -39,9 +45,11 @@ void setup() {
   Dote.clearDisplay(1);
   servo1.write(0);
   servo2.write(0);
+  btn.setCallback(btn_open);
 }
 
 void loop() {
+  btn.check();
   int distance1 = ultra1.getDistance();
   int distance2 = ultra2.getDistance();
 
