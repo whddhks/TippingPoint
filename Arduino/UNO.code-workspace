@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "UNO"
+		},
+		{
+			"path": "..\\..\\Arduino\\libraries"
+		},
+		{
+			"path": "nodeMCU"
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true,
+		"files.associations": {
+			"cstddef": "cpp"
+		}
+	}
+}

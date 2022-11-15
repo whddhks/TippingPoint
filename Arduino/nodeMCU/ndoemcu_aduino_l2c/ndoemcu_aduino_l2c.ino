@@ -23,8 +23,11 @@ void loop() {
     char wait = Serial.read();
     sig=sig+wait;
   }
-  char person_type=sig.substring(0,1)
-  String car_info=sig.substring(2,21)
+  
+  String person_type=sig.substring(0,1);
+  String car_info=sig.substring(2,22);
+
+  
   //Slave 6
   Wire.beginTransmission(6); /* 슬래이브 주소번호 8 */
   Wire.write(0);  /* 슬레이브에게 보내는 메세지 */
@@ -43,7 +46,7 @@ void loop() {
 
   //Slave 7
   Wire.beginTransmission(7);
-  if (person_type=='1'){
+  if (person_type=="1"){
       Wire.write(2);
   }
   Wire.write(1);
@@ -59,23 +62,26 @@ void loop() {
   delay(500);
 
 
-  //Slave 8
-
-
-    if (car_info != ""){
-      char buff[100];
-      car_info.toCharArray(buff,car_info.length());
+  //Slave 8,9
+  if (car_info != ""){
+    char buff[100];
+    car_info.toCharArray(buff,car_info.length());
+    if(buff[16]=='0'){
       Wire.beginTransmission(8);
       Wire.write(buff);
       Wire.endTransmission();
       Wire.requestFrom(8, 13);
-      while(Wire.available()){
-        char c2 = Wire.read();
-        car_info="";
-        buff[100]={};
-      }
-  }
-
+    }else{
+      Wire.beginTransmission(9);
+      Wire.write(buff);
+      Wire.endTransmission();
+      Wire.requestFrom(9, 13);
+    }
+    while(Wire.available()){
+      char c2 = Wire.read();
+    }
+    car_info="";
+    buff[100]={};
+    }
   
-  delay(1000);
 }

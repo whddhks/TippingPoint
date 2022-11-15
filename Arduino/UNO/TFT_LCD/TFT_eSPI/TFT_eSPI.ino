@@ -9,36 +9,42 @@
 #define TFT_CLK 13  // SCK
 #define TFT_LED 12
 TFT_22_ILI9225 tft = TFT_22_ILI9225(TFT_RST,TFT_RS, TFT_CS, TFT_SDI, TFT_CLK, TFT_LED);
-#define TFT_CS2  7  // SS
-#define TFT_RST2 6
+#define TFT_CS2  4  // SS
+#define TFT_RST2 3
 TFT_22_ILI9225 tft2 = TFT_22_ILI9225(TFT_RST2,TFT_RS, TFT_CS2, TFT_SDI, TFT_CLK, TFT_LED);
 
 String request_type;
 
+
+
 void setup() {
   Serial.begin(115200);
+  
   tft.begin();
   tft.setOrientation(1);
   AimHangul_v2(tft,60,0,"어서오십시오",COLOR_CYAN);
-  String name[3]={"차번호","입차시간","시간당금액"};
+  String name[3]={"시간","차번호","주차금액"};
   display(tft,name);
-  total_money(tft,"1000");
+  total_money(tft,"100");
+  tft.setFont(Terminal12x16);
+  tft.drawText(185,140,"W");
   tft2.begin();
   tft2.setOrientation(1);
   AimHangul_v2(tft2,60,0,"안녕히가십시오",COLOR_CYAN);
-  String name2[3]={"차번호","입차시간","지불할금액"};
+  String name2[3]={"시간","차번호","주차금액"};
   display(tft2,name2);
-  
-  Wire.begin(8);   
+  tft2.setFont(Terminal12x16);
+  tft2.drawText(185,140,"W");
+  Wire.begin(8);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
+  
 }
 
 
 void loop() {
- delay(1000);
+ delay(1500);
 }
-
 
 
 void display(TFT_22_ILI9225 tft, String name[]){
@@ -48,31 +54,28 @@ void display(TFT_22_ILI9225 tft, String name[]){
   } 
   for (int i=1;i<4;i++){
     tft.setFont(Terminal12x16);
-    int x=35+18*i;
+    int x=30+18*i;
     int y=5+45*i;
     tft.drawText(x, y, ":");
   }
 
 }
 void intro_time(TFT_22_ILI9225 tft, String time) {
-//  String h=time.substring(0,2);
-//  String m=time.substring(2,4);
   tft.setFont(Terminal12x16);
-  tft.drawText(90,95,time,COLOR_WHITE);
-//  tft.drawText(115,95,":",COLOR_WHITE);
-//  tft.drawText(125,95,m,COLOR_WHITE);
+  tft.drawText(110,50,time,COLOR_WHITE);
 }
 void car_num(TFT_22_ILI9225 tft,String fir_num,String snd_num) {
   String n1;
   if(fir_num.charAt(0)=='0'){
-    n1=fir_num.substring(1,3);
-  }else{n1=fir_num.substring(0,3);}
+    n1=fir_num.substring(1,3);}
+  else{
+    n1=fir_num.substring(0,3);}
 
   String s1=fir_num.substring(3,6);
   tft.setFont(Terminal12x16);
-  tft.drawText(70,50,n1,COLOR_GREEN);
-  tft.drawText(140,50,snd_num,COLOR_GREEN);
-  AimHangul(tft,120,50,s1,COLOR_GREEN);
+  tft.drawText(80,95,n1,COLOR_GREEN);
+  tft.drawText(145,95,snd_num,COLOR_GREEN);
+  AimHangul(tft,125,95,s1,COLOR_GREEN);
 }
 
 void total_money(TFT_22_ILI9225 tft, String m) {
@@ -80,9 +83,10 @@ void total_money(TFT_22_ILI9225 tft, String m) {
   if(m.charAt(0)=='0'){
     m1=m.substring(1,5);
   }else{m1=m.substring(0,5);}
-  AimHangul_v2(tft,170,135,"원",COLOR_WHITE);
+  
+//  AimHangul(tft,180,140,"원",COLOR_WHITE);
   tft.setFont(Terminal12x16);
-  tft.drawText(100,140,m1);
+  tft.drawText(100,140,m1+"0");
 }
 
 //0550288파10122505000
@@ -96,19 +100,16 @@ void receiveEvent(int howMany) {
     String snd_num=dstr.substring(0,4);
     String i_time=dstr.substring(10,15);
     String money=dstr.substring(15,19);
-//    Serial.println(fir_num);
-    if (if money.charAt(1)=='0'){
-      // intro_LCD
+    if (money.charAt(1)=='0'){
+//intro_LCD
       car_num(tft,fir_num,snd_num);
       intro_time(tft,i_time);
     }else{
-      // outro_LCD
+//outro_LCD
       intro_time(tft2,i_time);
       car_num(tft2,fir_num,snd_num);
-      total_money(tft2,money+"0");
+      total_money(tft2,money);
     }
-    delay(2000);
-    fir_num,snd_num,i_time,money="";
 }
 // 마스터로 요청 메세지 작성 함수
 void requestEvent() {
