@@ -5,10 +5,12 @@ import re
 import easyocr
 import pymysql
 import pandas as pd
-from util import car_time, result_plate, webcam, calc_price
+from util import car_time, result_plate, webcam, calc_price, signal
 
 def extro_main():
-    webcam(1, 'outro_image')
+    signal('COM9', 115200, 'out_1')
+    
+    webcam(2, 'outro_image')
 
 
     img_path = './image/outro_image/img.png'

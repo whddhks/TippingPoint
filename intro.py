@@ -4,10 +4,12 @@ import matplotlib.pyplot as plt
 import re
 import easyocr
 import pymysql
-from util import car_time, result_plate, webcam
+from util import car_time, result_plate, webcam, signal
 
 def intro_main():
-    webcam(0,'intro_image')
+    signal('COM9', 115200, 'in_1')
+    
+    webcam(1,'intro_image')
 
 
     img_path = './image/intro_image/img.png'
