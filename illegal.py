@@ -9,7 +9,7 @@ import pandas as pd
 import pymysql
 
 def illegal_main():
-    signal('COM6', 115200, 'illegal_1')
+    signal('COM6', 115200, 'illegal', 'cp949')
     
     webcam(3,'yellow_image')
 

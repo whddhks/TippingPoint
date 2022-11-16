@@ -8,7 +8,7 @@ import pandas as pd
 from util import car_time, result_plate, webcam, calc_price, signal
 
 def extro_main():
-    signal('COM9', 115200, 'out_1')
+    signal('COM9', 115200, 'out_1', 'utf-8')
     
     webcam(2, 'outro_image')
 
