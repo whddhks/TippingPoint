@@ -6,10 +6,10 @@ import easyocr
 from datetime import datetime
 import serial
 
-def signal(prt, bdrt, sign):
+def signal(prt, bdrt, sign, dcd):
     ser = serial.Serial(port = prt, baudrate = bdrt)
     while True:
-        if sign in ser.readline().decode():
+        if sign in ser.readline().decode(dcd):
             break
     ser.close()
 

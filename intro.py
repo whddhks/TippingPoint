@@ -7,7 +7,7 @@ import pymysql
 from util import car_time, result_plate, webcam, signal
 
 def intro_main():
-    signal('COM9', 115200, 'in_1')
+    signal('COM9', 115200, 'in_1', 'utf-8')
     
     webcam(1,'intro_image')
 
