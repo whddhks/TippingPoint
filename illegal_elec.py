@@ -106,6 +106,7 @@ def illegal_main():
     df_in = pd.DataFrame(result_in)
     find = df_in[df_in['last_number'] == second_num]
 
+    # 장애인 이용 차량 전용 구역 불법 주차 테이블에 저장
     if find['person_type'].values[0] == '1':
         pass
     else:
@@ -115,7 +116,20 @@ def illegal_main():
         #cur.execute("create table illegal_info (last_num char(4), first_num char(4))") # 처음 한 번만 실행해야한다. illegal이라는 이름의 테이블을 db_test라는 데이터 베이스 아래에 만드는 코드(아예 따로 빼서 먼저 실행시켜두고 이 코드에서 없애는 것도 방법일듯)
         cur.execute(f"insert into illegal_info values(\"{second_num}\", \"{first_num}\")")
         conn.commit()
-        conn.close()
+        
+        
+    #장애인 이용 전기 차량 구역 불법 주차 테이블에 저장
+    if find['car_elec'].values[0] == '1':
+        pass
+    else:
+        conn = pymysql.connect(host='127.0.0.1', user='root', password='multi123', db = 'car_manage', charset='utf8')
+        cur = conn.cursor()
+        #아랫줄은 제일 처음에 table 생성 시에만 사용함
+        #cur.execute("create table illegal_elec_info (last_number char(4), first_number char(4))") # 처음 한 번만 실행해야한다. illegal이라는 이름의 테이블을 db_test라는 데이터 베이스 아래에 만드는 코드(아예 따로 빼서 먼저 실행시켜두고 이 코드에서 없애는 것도 방법일듯)
+        cur.execute(f"insert into illegal_elec_info values(\"{second_num}\", \"{first_num}\")")
+        conn.commit()
+    
+    conn.close()
 
 
 if __name__ == '__main__':
