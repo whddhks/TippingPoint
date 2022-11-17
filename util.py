@@ -4,6 +4,14 @@ import matplotlib.pyplot as plt
 import re
 import easyocr
 from datetime import datetime
+import serial
+
+def signal(prt, bdrt, sign, dcd):
+    ser = serial.Serial(port = prt, baudrate = bdrt)
+    while True:
+        if sign in ser.readline().decode(dcd):
+            break
+    ser.close()
 
 def webcam(cam_num, img_folder):
     # 노트북 자체의 캠은 0번
