@@ -1,7 +1,7 @@
 # Parking area control service for persons with disabilities only
 
 <!-- 헤더 -->
-![header](https://capsule-render.vercel.app/api?type=transparent&height=200&section=header&text=TippingPoint%20&desc=Smart%20Parking%20Lot&fontColor=e0be00&fontSize=50&rotate=&fontAlignY=25&fontAlign=60&descAlignY=50&descAlign=50&&animation=twinkling)
+![header](https://capsule-render.vercel.app/api?type=transparent&height=200&section=header&text=TippingPoint%20&desc=Smart%20Parking%20Lot&fontColor=e0be00&fontSize=50&rotate=&fontAlignY=25&fontAlign=50&descAlignY=50&descAlign=50&&animation=twinkling)
 
 
 
