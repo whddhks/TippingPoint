@@ -24,8 +24,8 @@ void loop() {
     sig=sig+wait;
   }
   
-  String person_type=sig.substring(0,1);
-  String car_info=sig.substring(2,22);
+  String person_type=sig.substring(1,2);
+  String car_info=sig.substring(3,23);
 
   
   //Slave 6
@@ -57,21 +57,30 @@ void loop() {
     char c1 = Wire.read(); 
     dstr2=dstr2+c1;
   }
-  int b = dstr2.toInt();                         
-  com.print(1,"Disable_Car=>",b);        //
-  delay(500);
+  if(dstr2.charAt(1)=='1'){
+    String illegal_car="illegal";
+    Serial.println(illegal_car);
+  }
+    int b =dstr2.substring(0,1).toInt();
+    com.print(1,"Disable_Car=>",b);
+    
+    delay(500);
+
+  
+  
 
 
   //Slave 8,9
   if (car_info != ""){
     char buff[100];
     car_info.toCharArray(buff,car_info.length());
-    if(buff[16]=='0'){
+    if(sig.charAt(0)=='0'){
       Wire.beginTransmission(8);
       Wire.write(buff);
       Wire.endTransmission();
       Wire.requestFrom(8, 13);
-    }else{
+      
+    }else if(sig.charAt(0)=='1'){
       Wire.beginTransmission(9);
       Wire.write(buff);
       Wire.endTransmission();
@@ -83,5 +92,6 @@ void loop() {
     car_info="";
     buff[100]={};
     }
+    delay(500);
   
 }

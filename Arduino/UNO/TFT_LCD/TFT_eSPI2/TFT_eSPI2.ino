@@ -11,7 +11,7 @@
 TFT_22_ILI9225 tft = TFT_22_ILI9225(TFT_RST,TFT_RS, TFT_CS, TFT_SDI, TFT_CLK, TFT_LED);
 
 String request_type;
-
+String dstr;
 
 
 void setup() {
@@ -27,12 +27,22 @@ void setup() {
   Wire.begin(8);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
-  
 }
 
 
 void loop() {
- delay(1500);
+  if (dstr!=""){
+    delay(2000);
+    tft.clear();
+    AimHangul_v2(tft,60,0,"어서오십시오",COLOR_CYAN);
+    String name[3]={"시간","차번호","주차금액"};
+    display(tft,name);
+    total_money(tft,"100");
+    tft.setFont(Terminal12x16);
+    tft.drawText(185,140,"W");
+    dstr="";
+  }
+  
 }
 
 
@@ -78,7 +88,7 @@ void total_money(TFT_22_ILI9225 tft, String m) {
 
 //0550288파10122505000
 void receiveEvent(int howMany) {
- String dstr="";
+ dstr="";
  while (0 <Wire.available()) {    //메세지가 들어왔다면
     char c = Wire.read();      /* 1byte 읽음 */
     dstr=dstr+c;
@@ -92,5 +102,5 @@ void receiveEvent(int howMany) {
 }
 // 마스터로 요청 메세지 작성 함수
 void requestEvent() {
-  Wire.write("");  /*send string on request */
+  Wire.write("");/*send string on request */
 }

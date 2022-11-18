@@ -12,23 +12,38 @@ Servo servo1;
 Servo servo2;
 const int servo_pin1 = 3;
 const int servo_pin2 = 2;
-int b =2;
+int b;
 int request_type;
+int c;
 
+
+//byte digits[8] = {
+//  B00001000,
+//  B00010100,
+//  B11001000,
+//  B10001111,
+//  B10001000,
+//  B10001111,
+//  B01000001,
+//  B00111110,
+//};
 byte digits[8] = {
-  B00001000,
-  B00010100,
-  B11001000,
-  B10001111,
-  B10001000,
-  B10001111,
-  B01000001,
-  B00111110,
-};
+  B01111100,
+  B10000010,
+  B11110001,
+  B00010001,
+  B11110001,
+  B00010011,
+  B00101000,
+  B00010000};
 void btn_open() {
   servo2.write(90);
   delay(5000);
-  servo2.write(0);
+  long current_time=millis();
+  if(current_time>5000){
+    servo2.write(0);
+    current_time=0;
+  }
 }
 void setup() {
   Wire.begin(7);                /* 슬레이브의 자신의 주소 8 */
@@ -49,6 +64,7 @@ void setup() {
 }
 
 void loop() {
+  
   btn.check();
   int distance1 = ultra1.getDistance();
   int distance2 = ultra2.getDistance();
@@ -73,9 +89,9 @@ void loop() {
   }
 
   if (distance1<10 and distance2<10){b=0;}
-  else if(distance1<10){b=1;}
-  else if(distance2<10){b=1;}
-  else{b=2;}
+  else if(distance1<10){b=1,c=1;}
+  else if(distance2<10){b=1,c=1;}
+  else{b=2,c=0;}
 
 }
 
@@ -83,16 +99,11 @@ void loop() {
 void receiveEvent(int howMany) {
  while (0 <Wire.available()) {    //메세지가 들어왔다면
     request_type = Wire.read();      /* 1byte 읽음 */
+    Serial.println(request_type);
     if (request_type==2){
       servo1.write(90);
       servo2.write(90);
     }
-    Serial.println(request_type);
-    // if (request_type==4){
-    //   myservo2.write(90);
-    // }else if(request_type==5){
-    //   myservo2.write(0);
-    // }
     
   }
 
@@ -104,6 +115,11 @@ void requestEvent() {
     char buff[3];
     dtostrf(b,1,0,buff); //원래 실수임 을 char 배열형태로 만들기
     Wire.write(buff);
+    char buff2[3];
+    dtostrf(c,1,0,buff2); //원래 실수임 을 char 배열형태로 만들기
+    Wire.write(buff2);
+    
   }
+  
 //  Wire.write("Hello NodeMCU");  /*send string on request */
 }
