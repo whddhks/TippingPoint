@@ -21,5 +21,6 @@
 <img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=plastic&logo=Amazon%20AWS&logoColor=white"/></a> &nbsp
 <img src="https://img.shields.io/badge/Amazon EC2-FF9900?style=plastic&logo=Amazon EC2&logoColor=white"/></a> &nbsp<br>
 <img src="https://img.shields.io/badge/Grafana-F46800?style=plastic&logo=Grafana&logoColor=white"/></a> &nbsp<br>
+<img src="https://img.shields.io/badge/Git-F05032?style=plastic&logo=Git&logoColor=white"/></a> &nbsp
 <img src="https://img.shields.io/badge/Github-181717?style=plastic&logo=Github&logoColor=white"/></a> &nbsp</p>
 
