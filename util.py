@@ -115,12 +115,12 @@ def calc_price(find):
             if find['person_type'].values[0] == '0':
                 price = h*60*100 + m*100
             elif find['person_type'].values[0] == '1':
-                price = 0
+                price = h*60*60 + m*60
         elif find['car_elec'].values[0] == '1':
             if find['person_type'].values[0] == '0':
                 price = h*60*50 + m*50
             elif find['person_type'].values[0] == '1':
-                price = 0
+                price = h*60*80 + m*80
 
     # 예외 발생시 프린트 구문
     except :
