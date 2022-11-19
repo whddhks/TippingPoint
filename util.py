@@ -5,6 +5,20 @@ import re
 import easyocr
 from datetime import datetime
 import serial
+import pymysql
+
+def lcd_print(type):
+    con = pymysql.connect(host='localhost', user='root', password='multi123',db='car_manage', charset='utf8mb4')
+    cur = con.cursor()
+    sql = "select "+type+"_str from "+type+"_info order by chart desc limit 1;"
+    cur.execute(sql)
+    rows = cur.fetchall()
+    con.close()
+    ARD= serial.Serial('COM5',115200)
+    Trans= rows[0][0].encode('utf-8')
+    ARD.write(Trans)
+    print(Trans)
+    ARD.close()
 
 def signal(prt, bdrt, sign, dcd):
     ser = serial.Serial(port = prt, baudrate = bdrt)
@@ -101,12 +115,12 @@ def calc_price(find):
             if find['person_type'].values[0] == '0':
                 price = h*60*100 + m*100
             elif find['person_type'].values[0] == '1':
-                price = 0
+                price = h*60*60 + m*60
         elif find['car_elec'].values[0] == '1':
             if find['person_type'].values[0] == '0':
                 price = h*60*50 + m*50
             elif find['person_type'].values[0] == '1':
-                price = 0
+                price = h*60*80 + m*80
 
     # 예외 발생시 프린트 구문
     except :
