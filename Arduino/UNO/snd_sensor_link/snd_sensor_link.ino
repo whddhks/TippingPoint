@@ -15,7 +15,8 @@ const int servo_pin2 = 2;
 int b;
 int request_type;
 int c;
-
+long time;
+int v;
 
 //byte digits[8] = {
 //  B00001000,
@@ -37,13 +38,9 @@ byte digits[8] = {
   B00101000,
   B00010000};
 void btn_open() {
+  v=1;
   servo2.write(90);
-  delay(5000);
-  long current_time=millis();
-  if(current_time>5000){
-    servo2.write(0);
-    current_time=0;
-  }
+  time=millis();
 }
 void setup() {
   Wire.begin(7);                /* 슬레이브의 자신의 주소 8 */
@@ -93,33 +90,34 @@ void loop() {
   else if(distance2<10){b=1,c=1;}
   else{b=2,c=0;}
 
+  if (v==1){
+    long current_time=millis();
+    if(current_time-time>=5000){
+      servo2.write(0);
+      v=0;
+    }
+  }
 }
 
 // 마스터의 요청 이벤트가 발생 할때 항상 호출되는 함수
 void receiveEvent(int howMany) {
- while (0 <Wire.available()) {    //메세지가 들어왔다면
-    request_type = Wire.read();      /* 1byte 읽음 */
+ while (0 <Wire.available()) {
+    request_type = Wire.read();
     Serial.println(request_type);
     if (request_type==2){
       servo1.write(90);
       servo2.write(90);
     }
-    
   }
-
 }
-
-// 마스터로 요청 메세지 작성 함수
 void requestEvent() {
   if (request_type==1){
     char buff[3];
-    dtostrf(b,1,0,buff); //원래 실수임 을 char 배열형태로 만들기
+    dtostrf(b,1,0,buff);
     Wire.write(buff);
     char buff2[3];
-    dtostrf(c,1,0,buff2); //원래 실수임 을 char 배열형태로 만들기
+    dtostrf(c,1,0,buff2);
     Wire.write(buff2);
     
   }
-  
-//  Wire.write("Hello NodeMCU");  /*send string on request */
 }
