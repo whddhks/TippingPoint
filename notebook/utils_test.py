@@ -5,6 +5,19 @@ import re
 import easyocr
 from datetime import datetime
 
+def norm_elec(class_num, class_ev):
+    if class_num == '1':
+        if class_ev == '0':
+            class_num = '0'
+        elif class_ev == '1':
+            class_num = '1'
+    if class_num == '0':
+        if class_ev == '0':
+            class_num = '0'
+        elif class_ev == '1':
+            class_num = '1'
+    return class_num
+
 def webcam(cam_num, img_folder):
     # 노트북 자체의 캠은 0번
     webcam = cv2.VideoCapture(cam_num)
