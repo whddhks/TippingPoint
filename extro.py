@@ -6,7 +6,7 @@ import easyocr
 import pymysql
 import pandas as pd
 
-from util import car_time, result_plate, webcam, calc_price, signal,lcd_print
+from util import car_time, result_plate, webcam, calc_price, signal,lcd_print, norm_elec
 
 def extro_main():
     signal('COM8', 115200, 'out_1', 'utf-8')
@@ -38,6 +38,7 @@ def extro_main():
     # 주차딱지가 Detection 되면 class_num_y는 '3' 값을 가짐 (아래에 있는 if 문)
 
     class_num_y = '0'
+    class_ev = '0'
 
     reader = easyocr.Reader(['ko'])
 
@@ -55,9 +56,7 @@ def extro_main():
         if clss[i] == 0:
             print('클래스 번호: ', clss[i], '\n클래스: norm', '\nnorm일 확률: ', score[i])
 
-            # 22.11.05  옮김 ㅎㅅㅇ
             class_num = str(clss[i])
-            class_name = '일반'
 
             cv2.rectangle(bbox, (0,0), (x, y), (0,255,0), 3)
             cv2.imwrite('./image/outro_image/norm.jpg', bbox) #저장
@@ -93,7 +92,6 @@ def extro_main():
             print('클래스 번호: ', clss[i], '\n클래스: elec', '\nelec일 확률: ', score[i])
 
             class_num = str(clss[i])
-            class_name = '전기'
 
             cv2.rectangle(bbox, (0,0), (x, y), (0,255,0), 3)
             cv2.imwrite('./image/outro_image/elec.jpg', bbox)
@@ -125,10 +123,21 @@ def extro_main():
                     elec_re_black = Image.open('./image/outro_image/elec_re_black.jpg')
                     result = reader.readtext(elec_re_black)
                     plt.imshow(elec_re_black)
+                    
+        if clss[i] == 2:
+            print('클래스 번호: ', clss[i], '\n클래스: EV', '\nEV일 확률: ', score[i])
+            class_ev = '1'
+
+        if clss[i] == 3:
+            print('클래스 번호: ', clss[i], '\n클래스: yellow', '\nyellow일 확률: ', score[i])
+            cv2.rectangle(bbox, (0,0), (x, y), (0,255,0), 3)
+            class_num_y = '1'
 
     # -- 이미지 에러가 나면 출력할 구문
     # except :
     #     print('====IMG_ERR====')
+    
+    class_num = norm_elec(class_num, class_ev)
     
     first_num, second_num = result_plate(result)
 
