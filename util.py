@@ -129,3 +129,16 @@ def calc_price(find):
 
     # 정산 금액이 만원 이하일때 금액 앞 문자열을 '0' 으로 채움. => str형식
     return '{0:0>5}'.format(price)
+
+def norm_elec(class_num, class_ev):
+    if class_num == '1':
+        if class_ev == '0':
+            class_num = '0'
+        elif class_ev == '1':
+            class_num = '1'
+    if class_num == '0':
+        if class_ev == '0':
+            class_num = '0'
+        elif class_ev == '1':
+            class_num = '1'
+    return class_num
