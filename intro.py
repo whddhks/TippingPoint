@@ -5,7 +5,7 @@ import re
 import easyocr
 import pymysql
 
-from util import car_time, result_plate, webcam, signal,lcd_print
+from util import car_time, result_plate, webcam, signal,lcd_print, norm_elec
 
 def intro_main():
     signal('COM8', 115200, 'in_1', 'utf-8')
@@ -38,6 +38,7 @@ def intro_main():
     # 주차딱지가 Detection 되면 class_num_y는 '3'
     
     class_num_y = '0'
+    class_ev = '0'
 
     reader = easyocr.Reader(['ko'])
 
@@ -122,6 +123,10 @@ def intro_main():
                     elec_re_black = Image.open('./image/intro_image/elec_re_black.jpg')
                     result = reader.readtext(elec_re_black)
                     plt.imshow(elec_re_black)
+                    
+        if clss[i] == 2:
+            print('클래스 번호: ', clss[i], '\n클래스: EV', '\nEV일 확률: ', score[i])
+            class_ev = '1'
 
         if clss[i] == 3:
             print('클래스 번호: ', clss[i], '\n클래스: yellow', '\nyellow일 확률: ', score[i])
@@ -130,6 +135,8 @@ def intro_main():
     # -- 이미지 에러가 나면 출력할 구문
     # except :
     #     print('====IMG_ERR====')
+    
+    class_num = norm_elec(class_num, class_ev)
     
     first_num, second_num = result_plate(result)
 
