@@ -87,10 +87,12 @@ void total_money(TFT_22_ILI9225 tft, String m) {
 }
 
 //0550288파10122505000
+
+
 void receiveEvent(int howMany) {
  dstr="";
- while (0 <Wire.available()) {    //메세지가 들어왔다면
-    char c = Wire.read();      /* 1byte 읽음 */
+ while (0 <Wire.available()) {
+    char c = Wire.read();
     dstr=dstr+c;
  }
     String fir_num=dstr.substring(4,10);
@@ -100,6 +102,8 @@ void receiveEvent(int howMany) {
     car_num(tft,fir_num,snd_num);
     intro_time(tft,i_time);
 }
+
+
 // 마스터로 요청 메세지 작성 함수
 void requestEvent() {
   Wire.write("");/*send string on request */
