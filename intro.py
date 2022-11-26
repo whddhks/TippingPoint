@@ -13,7 +13,7 @@ def intro_main():
     webcam(3,'intro_image')
 
 
-    img_path = './image/intro_image/img.png'
+    img_path = 'car.png'
 
     img = cv2.imread(img_path)
 
@@ -64,6 +64,7 @@ def intro_main():
             if bbox is None:
                 print('Image load failed!')
                 bbox.exit()
+            
             
             norm_norm = Image.open("./image/intro_image/norm.jpg")
             plt.imshow(norm_norm)

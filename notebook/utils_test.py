@@ -36,25 +36,36 @@ def webcam(cam_num, img_folder):
         
     webcam.release()
     
+# 코드 작성자 정수현
+# 최종수정일 2022.11.14
+# OCR단계에서 얻은 결과 중 유의미한 문자를 최종 추출하는 함수 
 def result_plate(result):
-    plate = ['가', '나', '다', '라', '마', '거', '너', '더', '러', '머', '버', '서', '어', '저', '고', '노', '도', '로', '모', '보', '소', '오', '조', '구', '누', '두', '루', '무', '부', '수', '우', '주', '허', '하', '호', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+    # 1. 번호판에 올 수 있는 문자만 걸러내기 위함.
+    plate = ['가', '나', '다', '라', '마', '거', '너', '더', '러', '머', '버', '서', '어', '저', '고', '노', '도', '로', '모', '보', '소',
+     '오', '조', '구', '누', '두', '루', '무', '부', '수', '우', '주', '허', '하', '호', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+     
     result_list = []
     first_num = ''
     second_num = ''
     str_cnt = 0 # 앞 번호판의 문자 (1글자)만 읽기 위함.
     for i in result :
         for j in i[1] :
+            # 2. 1차로 결과에서 공백을 걸러내고 정확하게 읽힌 문자를 추가 처리없이 번호판으로 사용하기 위함.
             a = re.sub(' ','', i[1])
             for str in plate :
+                 # 3. ocr로 읽은 결과와 1. 의 글자를 비교하고 번호판으로 사용가능한 문자만 남김.
                 if j == str :
                     result_list.append(j)
+                    
+                    # 4. 정규식을 이용해 문자열 패턴을 찾는다.
                     if re.search(r'[0-9]{2,3}[가-힣]{1}',a) or re.search(r'[0-9]{4}', a) :
                         if re.search(r'[0-9]{2,3}[가-힣]{1}',a) and int(re.search(r'[0-9]{2,3}',a).group()) <= 699:
                             first_num = re.search(r'[0-9]{2,3}[가-힣]{1}',a).group().strip('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];')
-                            
+                        
                         if re.search(r'[0-9]{4}', re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];','', a)):
                             second_num = re.search(r'[0-9]{4}',a).group().strip('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];')
-
+                    # 5. 만약 정규식으로 찾아지지 않을 때 3. 에서 비교된 글자를 슬라이싱 하여 사용하게 된다.
                     elif second_num=='' and first_num=='' :
                         if '가'<=j<='힣' and str_cnt == 0 : 
                             str_cnt += 1
@@ -62,7 +73,6 @@ def result_plate(result):
                             first_num=''.join(first_num)
                             second_num=result_list[result_list.index(j)+1:]
                             second_num=''.join(first_num)
-
     if first_num == '' :
         first_num = 'ERRR'
     if second_num == '':
