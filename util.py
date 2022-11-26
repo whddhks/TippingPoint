@@ -57,8 +57,10 @@ def webcam(cam_num, img_folder):
                 break
         
     webcam.release()
-    
+
+    # 최종 문자 추출 함수
 def result_plate(result):
+    # 번호판으로 유효한 글자만 남기기 위함.
     plate = ['가', '나', '다', '라', '마', '거', '너', '더', '러', '머', '버', '서', '어', '저', '고', '노', '도', '로', '모', '보', '소', '오', '조', '구', '누', '두', '루', '무', '부', '수', '우', '주', '허', '하', '호', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
     result_list = []
     first_num = ''
@@ -66,17 +68,21 @@ def result_plate(result):
     str_cnt = 0 # 앞 번호판의 문자 (1글자)만 읽기 위함.
     for i in result :
         for j in i[1] :
+            # result에서 공백을 제거하고 문자 패턴을 살펴보기위함.
             a = re.sub(' ','', i[1])
             for str in plate :
+                # result의 문자와 plate안의 문자를 비교함.
                 if j == str :
                     result_list.append(j)
+                    # 정규식을 이용해 패턴을 찾음.
                     if re.search(r'[0-9]{2,3}[가-힣]{1}',a) or re.search(r'[0-9]{4}', a) :
                         if re.search(r'[0-9]{2,3}[가-힣]{1}',a) and int(re.search(r'[0-9]{2,3}',a).group()) <= 699:
                             first_num = re.search(r'[0-9]{2,3}[가-힣]{1}',a).group().strip('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];')
                             
                         if re.search(r'[0-9]{4}', re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];','', a)):
                             second_num = re.search(r'[0-9]{4}',a).group().strip('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];')
-
+                            
+                    # 정규식을 통해 패턴을 찾지못한경우 유효한 글자를 추린 result_list를 통해 만들어냄.
                     elif second_num=='' and first_num=='' :
                         if '가'<=j<='힣' and str_cnt == 0 : 
                             str_cnt += 1
@@ -84,7 +90,8 @@ def result_plate(result):
                             first_num=''.join(first_num)
                             second_num=result_list[result_list.index(j)+1:]
                             second_num=''.join(first_num)
-
+                            
+    # 최종으로 저장된 번호가 없으면 err로 표출하기 위함.
     if first_num == '' :
         first_num = 'ERRR'
     if second_num == '':
