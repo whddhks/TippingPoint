@@ -50,8 +50,7 @@
                  echo "<script>alert('이미 존재하는 사용자입니다.')</script>";
         }
         mysqli_close($conn);
-        }
-    
+        }    
     ?>
     <footer>
         &copy; copyright by TippingPoint<br>
