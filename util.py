@@ -4,6 +4,28 @@ import matplotlib.pyplot as plt
 import re
 import easyocr
 from datetime import datetime
+import serial
+import pymysql
+
+def lcd_print(type):
+    con = pymysql.connect(host='localhost', user='root', password='multi123',db='car_manage', charset='utf8mb4')
+    cur = con.cursor()
+    sql = "select "+type+"_str from "+type+"_info order by chart desc limit 1;"
+    cur.execute(sql)
+    rows = cur.fetchall()
+    con.close()
+    ARD= serial.Serial('COM5',115200)
+    Trans= rows[0][0].encode('utf-8')
+    ARD.write(Trans)
+    print(Trans)
+    ARD.close()
+
+def signal(prt, bdrt, sign, dcd):
+    ser = serial.Serial(port = prt, baudrate = bdrt)
+    while True:
+        if sign in ser.readline().decode(dcd):
+            break
+    ser.close()
 
 def webcam(cam_num, img_folder):
     # 노트북 자체의 캠은 0번
@@ -35,45 +57,40 @@ def webcam(cam_num, img_folder):
                 break
         
     webcam.release()
-                
+    
 def result_plate(result):
-    result_list = []
-
-    # 번호판으로 올 수 있는 문자만 추출 하기 위함.
     plate = ['가', '나', '다', '라', '마', '거', '너', '더', '러', '머', '버', '서', '어', '저', '고', '노', '도', '로', '모', '보', '소', '오', '조', '구', '누', '두', '루', '무', '부', '수', '우', '주', '허', '하', '호', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    result_list = []
     first_num = ''
     second_num = ''
     str_cnt = 0 # 앞 번호판의 문자 (1글자)만 읽기 위함.
+    for i in result :
+        for j in i[1] :
+            a = re.sub(' ','', i[1])
+            for str in plate :
+                if j == str :
+                    result_list.append(j)
+                    if re.search(r'[0-9]{2,3}[가-힣]{1}',a) or re.search(r'[0-9]{4}', a) :
+                        if re.search(r'[0-9]{2,3}[가-힣]{1}',a) and int(re.search(r'[0-9]{2,3}',a).group()) <= 699:
+                            first_num = re.search(r'[0-9]{2,3}[가-힣]{1}',a).group().strip('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];')
+                            
+                        if re.search(r'[0-9]{4}', re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];','', a)):
+                            second_num = re.search(r'[0-9]{4}',a).group().strip('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》];')
 
+                    elif second_num=='' and first_num=='' :
+                        if '가'<=j<='힣' and str_cnt == 0 : 
+                            str_cnt += 1
+                            first_num=result_list[:result_list.index(j)+1]
+                            first_num=''.join(first_num)
+                            second_num=result_list[result_list.index(j)+1:]
+                            second_num=''.join(first_num)
 
-    for j in result :
-        for str in plate :
-            if j == str :
-                result_list.append(j)
-
-        # 문자를 기준으로 앞번호 , 뒷 번호를 슬라이싱.
-        if '가'<=j<='힣' and str_cnt == 0 : 
-            str_cnt += 1
-            first_num=result_list[:result_list.index(j)+1]
-            second_num=result_list[result_list.index(j)+1:] 
-
-            # 형식에 맞게 들어왔는지 체크.
-            if 3<=len(first_num)<=4 :
-                first_num = ''.join(first_num)
-            else :
-                first_num = 'error'
-
-        # 앞 번호 문자 추출이후 뒷 번호를 한번 더 체크
-        # 번호판 앞 번호와 뒷 번호가 분리되지 않고 result로 들어온 경우. ex) '101하 4609'
-        # 번호판 앞 번호와 뒷 번호가 분리되어 result로 들어온 경우. ex)'101하' , '4609'
-        # 번호판 뒷 번호에 필요없는 문자가 섞여있는 경우 ex)'107rㄱㄱ1 6540가00' 모두 걸러냄.
-
-        else :
-            result_list2 = [n for n in result_list if '0'<=n<='9' not  in result_list]
-            if len(result_list2)== 0 :
-                result_list2 = [n for n in result_list if '0'<=n<='9' in result_list]
-            second_num = ''.join(result_list2[-4:])
-
+    if first_num == '' :
+        first_num = 'ERRR'
+    if second_num == '':
+        second_num = 'ERRR'
+        
+        
     return first_num,second_num
 
 def car_time():
@@ -98,12 +115,12 @@ def calc_price(find):
             if find['person_type'].values[0] == '0':
                 price = h*60*100 + m*100
             elif find['person_type'].values[0] == '1':
-                price = 0
+                price = h*60*60 + m*60
         elif find['car_elec'].values[0] == '1':
             if find['person_type'].values[0] == '0':
                 price = h*60*50 + m*50
             elif find['person_type'].values[0] == '1':
-                price = 0
+                price = h*60*80 + m*80
 
     # 예외 발생시 프린트 구문
     except :
@@ -112,3 +129,16 @@ def calc_price(find):
 
     # 정산 금액이 만원 이하일때 금액 앞 문자열을 '0' 으로 채움. => str형식
     return '{0:0>5}'.format(price)
+
+def norm_elec(class_num, class_ev):
+    if class_num == '1':
+        if class_ev == '0':
+            class_num = '0'
+        elif class_ev == '1':
+            class_num = '1'
+    if class_num == '0':
+        if class_ev == '0':
+            class_num = '0'
+        elif class_ev == '1':
+            class_num = '1'
+    return class_num

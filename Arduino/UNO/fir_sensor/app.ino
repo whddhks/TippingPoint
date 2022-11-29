@@ -48,23 +48,4 @@ void loop() {
         }
     }
 
-
-    //모션감지 센서
-    // int pir_pins[3]={pir_pin1,pir_pin2,pir_pin3};
-
-    // for (int i=0;i<3;i++){
-    //     val=digitalRead(pir_pins[i]);
-    //     if (val==HIGH){
-    //         if(pirState==LOW){
-    //             Serial.println(i+"Motion Detected!");
-    //             pirState=HIGH;
-    //         }
-    //     }else{
-    //         if(pirState==HIGH){
-    //         Serial.println(i+"Motion Ended!!");
-    //         pirState=LOW;
-    //         }
-    //     }
-    // }
-
 }
